@@ -21,8 +21,8 @@ const (
 	PprofPort = 6062
 	// RetryTimeout is the duration to wait between reconnection attempts.
 	RetryTimeout = 30 * time.Second
-	// HubbleTarget is the address of the local Hubble instance.
-	HubbleTarget = "unix://" + ciliumDefaults.HubbleSockPath
+	// PeerTarget is the address of the peer service.
+	PeerTarget = "unix://" + ciliumDefaults.HubbleSockPath
 
 	// SortBufferMaxLen is the max number of flows that can be buffered for
 	// sorting before being sen to the client.

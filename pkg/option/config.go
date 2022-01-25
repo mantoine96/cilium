@@ -852,6 +852,9 @@ const (
 	// HubbleListenAddress specifies address for Hubble server to listen to.
 	HubbleListenAddress = "hubble-listen-address"
 
+	// HubblePeerAddress specifies address for the Hubble peer server to listen to.
+	HubblePeerAddress = "hubble-peer-address"
+
 	// HubbleTLSDisabled allows the Hubble server to run on the given listen
 	// address without TLS.
 	HubbleTLSDisabled = "hubble-disable-tls"
@@ -1880,6 +1883,9 @@ type DaemonConfig struct {
 	// HubbleListenAddress specifies address for Hubble to listen to.
 	HubbleListenAddress string
 
+	// HubblePeerAddress specifies address for the Hubble peer service to listen to.
+	HubblePeerAddress string
+
 	// HubbleTLSDisabled allows the Hubble server to run on the given listen
 	// address without TLS.
 	HubbleTLSDisabled bool
@@ -2877,6 +2883,7 @@ func (c *DaemonConfig) Populate() {
 	c.EnableHubble = viper.GetBool(EnableHubble)
 	c.HubbleSocketPath = viper.GetString(HubbleSocketPath)
 	c.HubbleListenAddress = viper.GetString(HubbleListenAddress)
+	c.HubblePeerAddress = viper.GetString(HubblePeerAddress)
 	c.HubbleTLSDisabled = viper.GetBool(HubbleTLSDisabled)
 	c.HubbleTLSCertFile = viper.GetString(HubbleTLSCertFile)
 	c.HubbleTLSKeyFile = viper.GetString(HubbleTLSKeyFile)

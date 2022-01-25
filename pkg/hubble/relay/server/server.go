@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -55,13 +56,19 @@ func New(options ...Option) (*Server, error) {
 		return nil, ErrNoServerTLSConfig
 	}
 
+	var peerSvc peerTypes.ClientBuilder = &peerTypes.LocalClientBuilder{
+		DialTimeout: opts.dialTimeout,
+	}
+	if !strings.HasPrefix(opts.peerTarget, "unix://") {
+		peerSvc = &peerTypes.RemoteClientBuilder{
+			DialTimeout: opts.dialTimeout,
+			TLSConfig:   opts.clientTLSConfig,
+		}
+	}
+
 	pm, err := pool.NewPeerManager(
-		pool.WithPeerServiceAddress(opts.hubbleTarget),
-		pool.WithPeerClientBuilder(
-			&peerTypes.LocalClientBuilder{
-				DialTimeout: opts.dialTimeout,
-			},
-		),
+		pool.WithPeerServiceAddress(opts.peerTarget),
+		pool.WithPeerClientBuilder(peerSvc),
 		pool.WithClientConnBuilder(pool.GRPCClientConnBuilder{
 			DialTimeout: opts.dialTimeout,
 			Options: []grpc.DialOption{

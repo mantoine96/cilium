@@ -618,7 +618,14 @@ hubble:
   # Set this field ":4244" if you are enabling Hubble Relay, as it assumes that
   # Hubble is listening on port 4244.
   listenAddress: ":4244"
-
+  # -- An alternative address/port for the peer server. If set the peer service
+  # will listen on "0.0.0.0", and a cluster service will loadbalance it.
+  # ex. "4254"
+  peerListenPort: ~
+  # -- And override for the cluster peer service port, should the peer server
+  # be set up.
+  # ex. "4254"
+  peerServicePort: "4254"
   # -- TLS configuration for Hubble
   tls:
     # -- Enable mutual TLS for listenAddress. Setting this value to false is

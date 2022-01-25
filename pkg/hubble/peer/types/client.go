@@ -5,12 +5,18 @@ package types
 
 import (
 	"context"
+	"crypto/tls"
+	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	peerpb "github.com/cilium/cilium/api/v1/peer"
+	"github.com/cilium/cilium/pkg/crypto/certloader"
+	hubbleopts "github.com/cilium/cilium/pkg/hubble/server/serveroption"
 )
 
 // Client defines an interface that Peer service client should implement.
@@ -49,6 +55,39 @@ func (b LocalClientBuilder) Client(target string) (Client, error) {
 	defer cancel()
 	// the connection is local so we assume WithInsecure() is safe in this context
 	conn, err := grpc.DialContext(ctx, target, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return nil, err
+	}
+	return &client{conn, peerpb.NewPeerClient(conn)}, nil
+}
+
+// RemoteClientBuilder is a ClientBuilder that is suitable when the gRPC
+// connection to the Peer service is remote (typically a K8s Service).
+type RemoteClientBuilder struct {
+	DialTimeout   time.Duration
+	TLSConfig     certloader.ClientConfigBuilder
+}
+
+// Client implements ClientBuilder.Client.
+func (b RemoteClientBuilder) Client(target string) (Client, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), b.DialTimeout)
+	defer cancel()
+	opts := []grpc.DialOption{grpc.WithBlock()}
+	if b.TLSConfig == nil {
+		opts = append(opts, grpc.WithInsecure())
+	} else {
+		hostSlc := strings.Split(target, ":")
+		if len(hostSlc) < 1 {
+			return nil, fmt.Errorf("cannot dial an empty target")
+		}
+		tlsConfig := b.TLSConfig.ClientConfig(&tls.Config{
+			ServerName: hostSlc[0],
+			MinVersion: hubbleopts.MinTLSVersion,
+,
+		})
+		opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)))
+	}
+	conn, err := grpc.DialContext(ctx, target, opts...)
 	if err != nil {
 		return nil, err
 	}

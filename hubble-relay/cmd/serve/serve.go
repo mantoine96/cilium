@@ -79,7 +79,7 @@ func New(vp *viper.Viper) *cobra.Command {
 		"Address on which to listen")
 	flags.String(
 		keyPeerService,
-		defaults.HubbleTarget,
+		defaults.PeerTarget,
 		"Address of the server that implements the peer gRPC service")
 	flags.Int(
 		keySortBufferMaxLen,
@@ -137,7 +137,7 @@ func runServe(vp *viper.Viper) error {
 
 	opts := []server.Option{
 		server.WithDialTimeout(vp.GetDuration(keyDialTimeout)),
-		server.WithHubbleTarget(vp.GetString(keyPeerService)),
+		server.WithPeerTarget(vp.GetString(keyPeerService)),
 		server.WithListenAddress(vp.GetString(keyListenAddress)),
 		server.WithRetryTimeout(vp.GetDuration(keyRetryTimeout)),
 		server.WithSortBufferMaxLen(vp.GetInt(keySortBufferMaxLen)),

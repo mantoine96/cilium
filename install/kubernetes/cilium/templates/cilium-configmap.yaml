@@ -699,14 +699,18 @@ data:
 {{- if hasKey .Values.hubble "listenAddress" }}
   # An additional address for Hubble server to listen to (e.g. ":4244").
   hubble-listen-address: {{ .Values.hubble.listenAddress | quote }}
-{{- if .Values.hubble.tls.enabled }}
+{{- end }}
+{{- if hasKey .Values.hubble "peerListenPort" }}
+  # An alternative, non-local address for the peer server.
+  hubble-peer-address: ":{{ .Values.hubble.peerListenPort }}"
+{{- end }}
+{{- if and .Values.hubble.tls.enabled (or (hasKey .Values.hubble "listenAddress") (hasKey .Values.hubble "peerListenPort")) }}
   hubble-disable-tls: "false"
   hubble-tls-cert-file: /var/lib/cilium/tls/hubble/server.crt
   hubble-tls-key-file: /var/lib/cilium/tls/hubble/server.key
   hubble-tls-client-ca-files: /var/lib/cilium/tls/hubble/client-ca.crt
 {{- else }}
   hubble-disable-tls: "true"
-{{- end }}
 {{- end }}
 {{- end }}
 {{- if hasKey .Values "disableIptablesFeederRules" }}

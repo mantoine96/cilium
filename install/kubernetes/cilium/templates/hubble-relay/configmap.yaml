@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   config.yaml: |
-    peer-service: unix://{{ .Values.hubble.socketPath }}
+    peer-service: {{if hasKey .Values.hubble "peerListenPort" }}"hubble-peer.{{ .Release.Namespace }}:{{ .Values.hubble.peerServicePort }}"{{ else }}unix://{{ .Values.hubble.socketPath }}{{ end }}
     listen-address: {{ .Values.hubble.relay.listenHost }}:{{ .Values.hubble.relay.listenPort }}
     dial-timeout: {{ .Values.hubble.relay.dialTimeout }}
     retry-timeout: {{ .Values.hubble.relay.retryTimeout }}

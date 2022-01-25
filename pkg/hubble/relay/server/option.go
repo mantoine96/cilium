@@ -5,7 +5,6 @@ package server
 
 import (
 	"crypto/tls"
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -23,7 +22,7 @@ const MinTLSVersion = tls.VersionTLS13
 
 // options stores all the configuration values for the hubble-relay server.
 type options struct {
-	hubbleTarget    string
+	peerTarget      string
 	dialTimeout     time.Duration
 	retryTimeout    time.Duration
 	listenAddress   string
@@ -37,7 +36,7 @@ type options struct {
 
 // defaultOptions is the reference point for default values.
 var defaultOptions = options{
-	hubbleTarget:  defaults.HubbleTarget,
+	peerTarget:    defaults.PeerTarget,
 	dialTimeout:   defaults.DialTimeout,
 	retryTimeout:  defaults.RetryTimeout,
 	listenAddress: defaults.ListenAddress,
@@ -47,14 +46,10 @@ var defaultOptions = options{
 // Option customizes the configuration of the hubble-relay server.
 type Option func(o *options) error
 
-// WithHubbleTarget sets the URL of the local hubble instance to connect to.
-// This target MUST implement the Peer service.
-func WithHubbleTarget(t string) Option {
+// WithPeerTarget sets the URL of the hubble peer service to connect to.
+func WithPeerTarget(t string) Option {
 	return func(o *options) error {
-		if !strings.HasPrefix(t, "unix://") {
-			t = "unix://" + t
-		}
-		o.hubbleTarget = t
+		o.peerTarget = t
 		return nil
 	}
 }

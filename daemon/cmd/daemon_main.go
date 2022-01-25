@@ -930,6 +930,9 @@ func initializeFlags() {
 	flags.String(option.HubbleListenAddress, "", `An additional address for Hubble server to listen to, e.g. ":4244"`)
 	option.BindEnv(option.HubbleListenAddress)
 
+	flags.String(option.HubblePeerAddress, "", `Address for the Hubble peer server to listen to, e.g. ":4254"`)
+	option.BindEnv(option.HubblePeerAddress)
+
 	flags.Bool(option.HubbleTLSDisabled, false, "Allow Hubble server to run on the given listen address without TLS.")
 	option.BindEnv(option.HubbleTLSDisabled)
 
